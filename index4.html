@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ShaSha Cafe</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat&family=Cinzel:wght@600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to bottom,#f8f5f0,#efe7da);
+    color: #333;
+    overflow-x: hidden;
+}
+
+.watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Cinzel', serif;
+    font-size: 90px;
+    color: rgba(0,0,0,0.04);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 1000;
+    background: rgba(255,255,255,0.88);
+    padding: 8px 14px;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    backdrop-filter: blur(10px);
+    transition: 0.3s ease;
+}
+.menu-btn:hover { transform: scale(1.05); }
+
+.sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 230px;
+    height: 100%;
+    background: rgba(255,255,255,0.96);
+    box-shadow: 2px 0 18px rgba(0,0,0,0.12);
+    padding-top: 70px;
+    transition: 0.35s ease;
+    z-index: 999;
+    backdrop-filter: blur(12px);
+}
+.sidebar a {
+    display: block;
+    padding: 16px 22px;
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.sidebar a:hover {
+    background: #f4eee3;
+    color: #b48a3c;
+    padding-left: 28px;
+}
+.sidebar.active { left: 0; }
+
+section {
+    padding: 80px 20px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+#menu, #contact { display: none; }
+
+h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    color: #b48a3c;
+    margin-bottom: 10px;
+}
+
+.tagline {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.divider {
+    width: 120px;
+    height: 2px;
+    background: #b48a3c;
+    margin: 10px auto 40px;
+}
+
+.hero-text {
+    max-width: 800px;
+    margin: 0 auto 30px;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #444;
+}
+
+.status-badge {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+    background: white;
+}
+.open {
+    color: #148a3d;
+    border: 2px solid #25D366;
+}
+.closed {
+    color: #c0392b;
+    border: 2px solid #e74c3c;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 22px;
+}
+.gallery img {
+    width: 300px;
+    max-width: 90%;
+    border-radius: 22px;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.gallery img:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 20px 38px rgba(0,0,0,0.18);
+}
+
+.food-highlights { margin-top: 70px; }
+.food-grid {
+    max-width: 1000px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 24px;
+}
+.food-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 24px;
+    padding: 28px 20px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+}
+.food-card:hover { transform: translateY(-8px); }
+.food-card h3 {
+    font-family: 'Playfair Display', serif;
+    color: #b48a3c;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.food-card p {
+    color: #555;
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+.menu-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 160px;
+    font-family: 'Cinzel', serif;
+    color: rgba(180,138,60,0.05);
+    z-index: 0;
+}
+
+.search-wrap {
+    max-width: 500px;
+    margin: 0 auto 20px;
+    position: relative;
+    z-index: 2;
+}
+#menuSearch {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 40px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    outline: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+#menuSearch:focus {
+    border-color: #b48a3c;
+    box-shadow: 0 10px 24px rgba(180,138,60,0.15);
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 35px;
+    position: relative;
+    z-index: 2;
+}
+.filter-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 999px;
+    background: white;
+    color: #555;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    transition: 0.3s ease;
+}
+.filter-btn:hover,
+.filter-btn.active {
+    background: #b48a3c;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.menu-box {
+    position: relative;
+    z-index: 1;
+    background: white;
+    border-radius: 24px;
+    padding: 35px;
+    max-width: 1050px;
+    margin: auto;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.10);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 34px;
+}
+
+.category {
+    text-align: left;
+}
+.category h3 {
+    font-family: 'Cinzel', serif;
+    color: #b48a3c;
+    border-bottom: 2px solid #b48a3c;
+    padding-bottom: 8px;
+    margin-top: 20px;
+}
+.item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #ccc;
+    font-size: 15px;
+}
+.item:hover {
+    padding-left: 6px;
+    color: #b48a3c;
+}
+
+.contact-wrap {
+    max-width: 1100px;
+    margin: auto;
+}
+.contact-intro {
+    max-width: 700px;
+    margin: 0 auto 40px;
+    color: #555;
+    font-size: 17px;
+    line-height: 1.8;
+}
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 24px;
+    margin-top: 20px;
+}
+.contact-card {
+    background: white;
+    padding: 28px 20px;
+    border-radius: 22px;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+}
+.contact-card:hover { transform: translateY(-8px); }
+.contact-card h3 {
+    font-family: 'Playfair Display', serif;
+    color: #b48a3c;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.contact-card p, .contact-card a {
+    color: #555;
+    font-size: 15px;
+    line-height: 1.8;
+    text-decoration: none;
+}
+.contact-bottom {
+    margin-top: 45px;
+    background: rgba(255,255,255,0.88);
+    border-radius: 24px;
+    padding: 30px 25px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+}
+.contact-bottom h3 {
+    font-family: 'Playfair Display', serif;
+    color: #b48a3c;
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+.contact-bottom p {
+    color: #555;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.floating-menu {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 9999;
+}
+.fab-main {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #b48a3c, #d7a85a);
+    color: white;
+    font-size: 28px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 16px 30px rgba(180,138,60,0.30);
+}
+.fab-options {
+    position: absolute;
+    bottom: 82px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: 0.3s ease;
+}
+.fab-options.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+.fab-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 185px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.14);
+    text-decoration: none;
+}
+.fab-insta { background: linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7); }
+.fab-whatsapp { background: linear-gradient(135deg, #25D366, #0fa958); }
+.fab-location { background: linear-gradient(135deg, #d9a84b, #b48a3c); }
+
+@media (max-width: 900px) {
+    .contact-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+@media (max-width: 768px) {
+    h2 { font-size: 34px; }
+    .menu-grid, .food-grid, .contact-grid { grid-template-columns: 1fr; }
+    .watermark { font-size: 60px; }
+    .menu-watermark { font-size: 100px; }
+    .gallery img { width: 95%; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="watermark">SHASHA</div>
+
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+<div class="sidebar" id="sidebar">
+    <a onclick="showHome()">Home</a>
+    <a onclick="showMenu()">Our Menu</a>
+    <a onclick="showContact()">Contact</a>
+</div>
+
+<!-- HOME -->
+<section id="home">
+    <h2>Welcome to ShaSha Cafe</h2>
+    <p class="tagline">Not just anyplace ✨</p>
+    <div class="divider"></div>
+
+    <p class="hero-text">
+        A cozy food spot in Nizamabad made for good vibes, tasty bites, and chill moments.
+        Visit ShaSha Cafe and enjoy shawarmas, burgers, pizza, fries, drinks, and more.
+    </p>
+
+    <div id="shopStatus" class="status-badge">Checking status...</div>
+
+    <div class="gallery" style="margin-top: 30px;">
+        <img src="cafe1.jpg" alt="ShaSha Cafe Interior 1">
+        <img src="cafe2.jpg" alt="ShaSha Cafe Interior 2">
+        <img src="cafe3.jpg" alt="ShaSha Cafe Interior 3">
+    </div>
+
+    <div class="food-highlights">
+        <h2>Customer Favorites</h2>
+        <div class="divider"></div>
+
+        <div class="food-grid">
+            <div class="food-card"><h3>Chicken Shawarma</h3><p>Juicy, flavorful, and one of the most loved picks.</p></div>
+            <div class="food-card"><h3>Cheesy Fries</h3><p>Crispy, satisfying, and perfect for your snack cravings.</p></div>
+            <div class="food-card"><h3>Mojitos & Shakes</h3><p>Refreshing drinks made to match the vibe and complete the chill.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- MENU -->
+<section id="menu" style="position:relative;">
+    <h2>OUR MENU</h2>
+    <div class="divider"></div>
+
+    <div class="search-wrap">
+        <input type="text" id="menuSearch" placeholder="🔍 Search menu items..." onkeyup="filterMenu()">
+    </div>
+
+    <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterCategory('all', this)">All</button>
+        <button class="filter-btn" onclick="filterCategory('shawarma', this)">Shawarma</button>
+        <button class="filter-btn" onclick="filterCategory('fries', this)">Fries</button>
+        <button class="filter-btn" onclick="filterCategory('burgers', this)">Burgers</button>
+        <button class="filter-btn" onclick="filterCategory('snacks', this)">Snacks</button>
+        <button class="filter-btn" onclick="filterCategory('sandwich', this)">Sandwich</button>
+        <button class="filter-btn" onclick="filterCategory('pizza', this)">Pizza</button>
+        <button class="filter-btn" onclick="filterCategory('drinks', this)">Drinks</button>
+    </div>
+
+    <div class="menu-watermark">MENU</div>
+
+    <div class="menu-box">
+        <div class="menu-grid">
+
+            <div>
+                <div class="category" data-category="shawarma">
+                    <h3>SHAWARMA</h3>
+                    <div class="item"><span>Falafel Shawarma</span><span>140</span></div>
+                    <div class="item"><span>Paneer Shawarma</span><span>140</span></div>
+                    <div class="item"><span>Chicken Shawarma With Salad</span><span>140</span></div>
+                    <div class="item"><span>Chicken Shawarma No Salad</span><span>140</span></div>
+                    <div class="item"><span>Spicy Chicken Shawarma</span><span>140</span></div>
+                    <div class="item"><span>Cheesy Chicken Shawarma</span><span>150</span></div>
+                    <div class="item"><span>Chipotle Chicken Shawarma</span><span>150</span></div>
+                    <div class="item"><span>Crispy Chicken Shawarma</span><span>150</span></div>
+                </div>
+
+                <div class="category" data-category="fries">
+                    <h3>FRIES</h3>
+                    <div class="item"><span>Salted French Fries</span><span>99</span></div>
+                    <div class="item"><span>Peri Peri Fries</span><span>109</span></div>
+                    <div class="item"><span>Masala French Fries</span><span>109</span></div>
+                    <div class="item"><span>Lemon & Chilli Fries</span><span>119</span></div>
+                    <div class="item"><span>Chilli Garlic Fries</span><span>119</span></div>
+                </div>
+
+                <div class="category" data-category="burgers">
+                    <h3>BURGERS</h3>
+                    <div class="item"><span>Veggie Burger</span><span>140</span></div>
+                    <div class="item"><span>Crispy Chicken Burger</span><span>140</span></div>
+                    <div class="item"><span>Grilled Chicken Burger</span><span>150</span></div>
+                </div>
+
+                <div class="category" data-category="snacks">
+                    <h3>SNACKS</h3>
+                    <div class="item"><span>Cheese & Jalapeno Pops</span><span>119</span></div>
+                    <div class="item"><span>Veg Nuggets (10 pcs)</span><span>139</span></div>
+                    <div class="item"><span>Chicken Nuggets (10 pcs)</span><span>159</span></div>
+                    <div class="item"><span>Chicken Popcorn</span><span>159</span></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="category" data-category="sandwich">
+                    <h3>SANDWICH</h3>
+                    <div class="item"><span>Veg Grilled Sandwich</span><span>129</span></div>
+                    <div class="item"><span>Paneer Grilled Sandwich</span><span>139</span></div>
+                    <div class="item"><span>Chicken Grilled Sandwich</span><span>139</span></div>
+                </div>
+
+                <div class="category" data-category="pizza">
+                    <h3>PIZZA</h3>
+                    <div class="item"><span>Margherita Pizza</span><span>160 / 210</span></div>
+                    <div class="item"><span>Corn & Cheese Pizza</span><span>170 / 210</span></div>
+                    <div class="item"><span>Veggie Delight Pizza</span><span>190 / 230</span></div>
+                    <div class="item"><span>Paneer & Corn Pizza</span><span>190 / 250</span></div>
+                    <div class="item"><span>Paneer Delight Pizza</span><span>190 / 250</span></div>
+                    <div class="item"><span>Classic Chicken Pizza</span><span>190 / 250</span></div>
+                    <div class="item"><span>Chicken Tikka Pizza</span><span>190 / 250</span></div>
+                    <div class="item"><span>Grilled Chicken Pizza</span><span>190 / 250</span></div>
+                    <div class="item"><span>BBQ Chicken Pizza</span><span>190 / 260</span></div>
+                    <div class="item"><span>Chicken & Prawn Pizza</span><span>210 / 270</span></div>
+                </div>
+
+                <div class="category" data-category="drinks">
+                    <h3>DRINKS</h3>
+                    <div class="item"><span>Chocolate Milkshake</span><span>140 / 170</span></div>
+                    <div class="item"><span>Strawberry Milkshake</span><span>140 / 170</span></div>
+                    <div class="item"><span>Litchi Milkshake</span><span>140 / 170</span></div>
+                    <div class="item"><span>Mango Milkshake</span><span>140 / 170</span></div>
+                    <div class="item"><span>Brownie Blast</span><span>160 / 180</span></div>
+                    <div class="item"><span>Oreo Chocolate</span><span>160 / 180</span></div>
+                    <div class="item"><span>KitKat Shake</span><span>160 / 180</span></div>
+
+                    <h3>MOJITOS</h3>
+                    <div class="item"><span>Virgin Mojito</span><span>99</span></div>
+                    <div class="item"><span>Pineapple Mojito</span><span>110</span></div>
+                    <div class="item"><span>Strawberry Mojito</span><span>110</span></div>
+                    <div class="item"><span>Cranberry Mojito</span><span>110</span></div>
+                    <div class="item"><span>Raspberry Mojito</span><span>110</span></div>
+                    <div class="item"><span>Blue Sea Curacao</span><span>110</span></div>
+
+                    <h3>ICED COFFEES</h3>
+                    <div class="item"><span>Iced Coffee</span><span>99</span></div>
+                    <div class="item"><span>Chocolate Iced Coffee</span><span>110</span></div>
+                    <div class="item"><span>Caramel Iced Coffee</span><span>110</span></div>
+                    <div class="item"><span>Hazelnut Iced Coffee</span><span>110</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <h2>Contact Us</h2>
+    <div class="divider"></div>
+
+    <div class="contact-wrap">
+        <p class="contact-intro">
+            We’d love to welcome you to ShaSha Cafe. Reach out, visit us, or connect anytime for food, vibes, and cozy moments.
+        </p>
+
+        <div class="contact-grid">
+            <div class="contact-card"><h3>Visit</h3><p>Nizamabad,<br>Opp Mantiquilla</p></div>
+            <div class="contact-card"><h3>Call</h3><p><a href="tel:9573650640">9573650640</a></p></div>
+            <div class="contact-card"><h3>Email</h3><p><a href="mailto:duvvarn@gmail.com">duvvarn@gmail.com</a></p></div>
+            <div class="contact-card"><h3>Hours</h3><p>Everyday<br>11:00 AM – 11:00 PM</p></div>
+        </div>
+
+        <div class="contact-bottom">
+            <h3>See you at ShaSha ✨</h3>
+            <p>Whether you’re stopping by for a quick bite, a relaxed evening, or just to enjoy the vibe, ShaSha Cafe is always ready to welcome you.</p>
+        </div>
+    </div>
+</section>
+
+<div class="floating-menu">
+    <div class="fab-options" id="fabOptions">
+        <a href="https://www.instagram.com/cafe.shasha?igsh=aXB3ejZxcGthMzI=" target="_blank" class="fab-link fab-insta">📸 Instagram</a>
+        <a href="https://wa.me/919573650640" target="_blank" class="fab-link fab-whatsapp">💬 WhatsApp</a>
+        <a href="https://maps.app.goo.gl/ZXgTfo2GzHaHjHxT8" target="_blank" class="fab-link fab-location">📍 Location</a>
+    </div>
+    <button class="fab-main" onclick="toggleFab()">☰</button>
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("active");
+}
+
+function showSection(sec) {
+    document.getElementById("home").style.display = "none";
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("contact").style.display = "none";
+    document.getElementById(sec).style.display = "block";
+
+    if (document.getElementById("sidebar").classList.contains("active")) {
+        document.getElementById("sidebar").classList.remove("active");
+    }
+}
+
+function showHome() { showSection("home"); }
+function showMenu() { showSection("menu"); }
+function showContact() { showSection("contact"); }
+
+function toggleFab() {
+    document.getElementById("fabOptions").classList.toggle("show");
+}
+
+function filterMenu() {
+    let input = document.getElementById("menuSearch").value.toLowerCase();
+    let categories = document.querySelectorAll(".category");
+
+    categories.forEach(category => {
+        let items = category.querySelectorAll(".item");
+        let hasVisible = false;
+
+        items.forEach(item => {
+            let text = item.innerText.toLowerCase();
+            if (text.includes(input)) {
+                item.style.display = "flex";
+                hasVisible = true;
+            } else {
+                item.style.display = "none";
+            }
+        });
+
+        category.style.display = hasVisible ? "block" : "none";
+    });
+
+    document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(".filter-btn").classList.add("active");
+}
+
+function filterCategory(category, button) {
+    document.getElementById("menuSearch").value = "";
+    document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
+
+    let categories = document.querySelectorAll(".category");
+
+    categories.forEach(cat => {
+        if (category === "all" || cat.dataset.category === category) {
+            cat.style.display = "block";
+            cat.querySelectorAll(".item").forEach(item => item.style.display = "flex");
+        } else {
+            cat.style.display = "none";
+        }
+    });
+}
+
+function updateShopStatus() {
+    const statusEl = document.getElementById("shopStatus");
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const openTime = 11 * 60;
+    const closeTime = 23 * 60;
+
+    if (currentTime >= openTime && currentTime < closeTime) {
+        statusEl.innerHTML = "🟢 Open Now • Closes at 11:00 PM";
+        statusEl.classList.add("open");
+        statusEl.classList.remove("closed");
+    } else {
+        statusEl.innerHTML = "🔴 Closed Now • Opens at 11:00 AM";
+        statusEl.classList.add("closed");
+        statusEl.classList.remove("open");
+    }
+}
+updateShopStatus();
+</script>
+
+</body>
+</html>
